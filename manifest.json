@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Subscription Button",
+  "version": "1.1.0",
+  "description": "YouTubeのヘッダーに登録チャンネルへのショートカットボタンを追加します。",
+  "icons": {
+    "16": "images/user_icon.png",
+    "48": "images/user_icon.png",
+    "128": "images/user_icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "css": ["styles.css"],
+      "js": ["content_script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["images/user_icon.png"],
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ]
+}

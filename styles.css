@@ -1,0 +1,43 @@
+#custom-sub-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background-color: transparent;
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: var(--yt-spec-text-primary, #0f0f0f);
+  transition: background-color 0.15s ease;
+}
+
+#custom-sub-btn:hover {
+  background-color: var(--yt-spec-10-percent-layer, rgba(128, 128, 128, 0.15));
+}
+
+#custom-sub-btn:active {
+  background-color: var(--yt-spec-20-percent-layer, rgba(128, 128, 128, 0.25));
+}
+
+#custom-sub-btn:focus-visible {
+  outline: 2px solid var(--yt-spec-call-to-action, #065fd4);
+  outline-offset: 2px;
+}
+
+#custom-sub-btn img,
+#custom-sub-btn svg {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+/* 黒単色のシルエット画像をダークモード時に白く反転させる設定 */
+/* ※カラー画像や白アイコンを使う場合は以下の3行を削除してください */
+html[dark] #custom-sub-btn img {
+  filter: invert(1);
+}
