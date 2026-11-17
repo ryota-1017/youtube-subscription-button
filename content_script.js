@@ -61,7 +61,7 @@
   }
 
   /**
-   * ヘッダー内のボタン挿入先を取得する
+   * ヘッダー内のボタン挿入先コンテナを取得する
    */
   function getTargetContainer() {
     return (
@@ -71,7 +71,50 @@
   }
 
   /**
-   * ボタンが未挿入であればヘッダーに追加する
+   * コンテナ直下にある「マイアカウント」要素を取得する
+   */
+  function getAccountElement(container) {
+    const avatarBtn = container.querySelector('#avatar-btn');
+    if (!avatarBtn) return null;
+
+    // container の直下の子要素まで親を辿る
+    let el = avatarBtn;
+    while (el && el.parentElement !== container) {
+      el = el.parentElement;
+    }
+    return el;
+  }
+
+  /**
+   * ボタンを「マイアカウント」の視覚的なすぐ左側に配置する
+   */
+  function placeButtonBeforeAccount(container, btn, accountEl) {
+    const isRowReverse = getComputedStyle(container).flexDirection === 'row-reverse';
+    const isAdjacent =
+      accountEl.previousElementSibling === btn || accountEl.nextElementSibling === btn;
+
+    // すでに隣接しており、視覚的にもマイアカウントの左側にある場合は何もしない
+    if (isAdjacent) {
+      const btnRect = btn.getBoundingClientRect();
+      const accRect = accountEl.getBoundingClientRect();
+      if (btnRect.width > 0 && accRect.width > 0 && btnRect.left < accRect.left) {
+        return;
+      }
+    }
+
+    const expectedPosition = isRowReverse ? 'afterend' : 'beforebegin';
+    accountEl.insertAdjacentElement(expectedPosition, btn);
+
+    // CSSのorder等で左右が逆転している場合の最終補正
+    const btnRect = btn.getBoundingClientRect();
+    const accRect = accountEl.getBoundingClientRect();
+    if (btnRect.width > 0 && accRect.width > 0 && btnRect.left > accRect.left) {
+      accountEl.insertAdjacentElement(isRowReverse ? 'beforebegin' : 'afterend', btn);
+    }
+  }
+
+  /**
+   * ボタンが未挿入、または位置がずれていればヘッダーのマイアカウント左側に配置する
    */
   function ensureSubscriptionButton() {
     if (!isExtensionContextValid()) {
@@ -79,16 +122,24 @@
       return;
     }
 
-    if (document.getElementById(BUTTON_ID)) {
-      retargetObserverToMasthead();
-      return;
-    }
-
     const container = getTargetContainer();
     if (!container) return;
 
-    const btn = createSubscriptionButton();
-    container.prepend(btn);
+    const accountEl = getAccountElement(container);
+    let btn = document.getElementById(BUTTON_ID);
+
+    if (!btn) {
+      btn = createSubscriptionButton();
+      if (accountEl) {
+        placeButtonBeforeAccount(container, btn, accountEl);
+      } else {
+        container.prepend(btn);
+      }
+    } else if (accountEl) {
+      // アカウントボタンが後から描画された場合でも正しい位置へ移動する
+      placeButtonBeforeAccount(container, btn, accountEl);
+    }
+
     retargetObserverToMasthead();
   }
 
