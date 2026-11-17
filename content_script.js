@@ -17,9 +17,10 @@
   }
 
   /**
-   * 画像が読み込めなかった場合のフォールバック用SVGアイコンを作成する
+   * 人物シルエットのSVGアイコンを作成する
+   * （chrome-extension:// URL の読み込み制限エラーを回避するためインラインSVGを使用）
    */
-  function createFallbackSvg() {
+  function createIconSvg() {
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
@@ -45,18 +46,7 @@
     link.title = '登録チャンネル';
     link.setAttribute('aria-label', '登録チャンネル');
 
-    const icon = document.createElement('img');
-    icon.src = chrome.runtime.getURL('images/user_icon.png');
-    icon.alt = '登録チャンネル';
-
-    // 画像が未配置または読み込み失敗時はSVGアイコンへフォールバック
-    icon.addEventListener('error', () => {
-      if (icon.parentNode === link) {
-        link.replaceChild(createFallbackSvg(), icon);
-      }
-    });
-
-    link.appendChild(icon);
+    link.appendChild(createIconSvg());
     return link;
   }
 
@@ -125,8 +115,16 @@
     const container = getTargetContainer();
     if (!container) return;
 
+    // 万が一ボタンが複数存在していた場合は1つ目以外を削除する
+    const existingButtons = document.querySelectorAll(`#${BUTTON_ID}`);
+    if (existingButtons.length > 1) {
+      for (let i = 1; i < existingButtons.length; i++) {
+        existingButtons[i].remove();
+      }
+    }
+
     const accountEl = getAccountElement(container);
-    let btn = document.getElementById(BUTTON_ID);
+    let btn = existingButtons[0] || null;
 
     if (!btn) {
       btn = createSubscriptionButton();

@@ -15,11 +15,5 @@
       "js": ["content_script.js"],
       "run_at": "document_idle"
     }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["images/user_icon.png"],
-      "matches": ["https://www.youtube.com/*"]
-    }
   ]
 }

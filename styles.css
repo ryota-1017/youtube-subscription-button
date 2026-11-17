@@ -35,9 +35,3 @@
   display: block;
   pointer-events: none;
 }
-
-/* 黒単色のシルエット画像をダークモード時に白く反転させる設定 */
-/* ※カラー画像や白アイコンを使う場合は以下の3行を削除してください */
-html[dark] #custom-sub-btn img {
-  filter: invert(1);
-}
